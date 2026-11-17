@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+{% from "macros.html" import badge, period, timeline %}
+{% set nav = 'inbox' %}
+{% block main %}
+<a class="back" href="/inbox{{ '?tab=done' if leave.status.value != 'pending' }}">‹ 返回清單</a>
+
+<div class="split">
+  <section class="panel">
+    <div class="row">
+      <h2>{{ student.display_name }} 的{{ leave.leave_type }}</h2>
+      {{ badge(leave.status) }}
+    </div>
+    <dl class="info">
+      <dt>學號</dt><dd>{{ student.account }}（{{ student.class_name }}）</dd>
+      <dt>日期</dt><dd>{{ period(leave) }}，共 {{ leave.days }} 天</dd>
+      <dt>事由</dt><dd class="pre">{{ leave.reason }}</dd>
+      <dt>本學期</dt><dd>已核准 {{ student_days }} 天</dd>
+      {% if leave.reply %}
+      <dt>你的意見</dt><dd class="pre">{{ leave.reply }}</dd>
+      {% endif %}
+    </dl>
+
+    {% if leave.status.value == 'pending' %}
+    <form method="post" action="/inbox/{{ leave.id }}" class="stack decision" id="decision-form">
+      <label>審核意見<small>（駁回時必填）</small>
+        <textarea name="comment" rows="3" placeholder="例如：請補上診斷證明"></textarea>
+      </label>
+      <div class="quick-replies">
+        <button type="button" class="tag-btn">好好休息，早日康復</button>
+        <button type="button" class="tag-btn">請補上證明文件</button>
+        <button type="button" class="tag-btn">日期有誤，請確認</button>
+      </div>
+      <div class="actions">
+        <button class="btn solid" name="decision" value="approve">✔ 核准</button>
+        <button class="btn danger" name="decision" value="reject" data-need-comment>✖ 駁回</button>
+      </div>
+    </form>
+    {% endif %}
+  </section>
+
+  <section class="panel">
+    <h3>處理紀錄</h3>
+    {{ timeline(logs) }}
+  </section>
+</div>
+{% endblock %}
