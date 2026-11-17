@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+{% from "macros.html" import badge, period %}
+{% set nav = 'inbox' %}
+{% block main %}
+<div class="head-row">
+  <h2>審核假單</h2>
+</div>
+
+<div class="tabs">
+  <a href="/inbox" class="{{ 'on' if tab == 'todo' }}">待審核 {{ todo_count }}</a>
+  <a href="/inbox?tab=done" class="{{ 'on' if tab == 'done' }}">已處理 {{ done_count }}</a>
+</div>
+
+{% if rows %}
+<div class="table-wrap">
+<table class="grid">
+  <thead>
+    <tr>
+      <th>學生</th><th>假別</th><th>日期</th><th>天數</th>
+      <th>{{ '事由' if tab == 'todo' else '結果' }}</th><th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for x, s in rows %}
+    <tr>
+      <td><b>{{ s.display_name }}</b><br><small>{{ s.account }}</small></td>
+      <td>{{ x.leave_type }}</td>
+      <td>{{ period(x) }}</td>
+      <td>{{ x.days }}</td>
+      <td class="clip">{% if tab == 'todo' %}{{ x.reason }}{% else %}{{ badge(x.status) }}{% endif %}</td>
+      <td class="go"><a class="btn {{ 'solid' if tab == 'todo' }}" href="/inbox/{{ x.id }}">{{ '審核' if tab == 'todo' else '查看' }}</a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% elif tab == 'todo' %}
+<p class="nothing">沒有待審核的假單 ☕</p>
+{% else %}
+<p class="nothing">還沒有處理過的假單。</p>
+{% endif %}
+{% endblock %}
