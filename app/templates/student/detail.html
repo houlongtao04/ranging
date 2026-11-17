@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+{% from "macros.html" import badge, period, timeline %}
+{% set nav = 'list' %}
+{% block main %}
+<a class="back" href="/me/leaves">‹ 我的假單</a>
+
+<div class="split">
+  <section class="panel">
+    <div class="row">
+      <h2>{{ leave.leave_type }}・{{ leave.days }} 天</h2>
+      {{ badge(leave.status) }}
+    </div>
+    <dl class="info">
+      <dt>日期</dt><dd>{{ period(leave) }}</dd>
+      <dt>事由</dt><dd class="pre">{{ leave.reason }}</dd>
+      {% if leave.reply %}
+      <dt>導師意見</dt><dd class="pre">{{ leave.reply }}</dd>
+      {% endif %}
+    </dl>
+
+    <div class="actions">
+      {% if leave.status.value in ('draft', 'rejected') %}
+      <a class="btn" href="/me/leaves/{{ leave.id }}/edit">修改</a>
+      <form method="post" action="/me/leaves/{{ leave.id }}/send">
+        <button class="btn solid" data-confirm="確定送出給導師審核？">
+          {{ '重新送出' if leave.status.value == 'rejected' else '送出申請' }}
+        </button>
+      </form>
+      {% endif %}
+      {% if leave.status.value == 'pending' %}
+      <form method="post" action="/me/leaves/{{ leave.id }}/withdraw">
+        <button class="btn" data-confirm="撤回後假單會回到草稿，確定嗎？">撤回申請</button>
+      </form>
+      {% endif %}
+      {% if leave.status.value == 'draft' %}
+      <form method="post" action="/me/leaves/{{ leave.id }}/delete" class="push-right">
+        <button class="btn danger" data-confirm="刪除後無法復原，確定嗎？">刪除</button>
+      </form>
+      {% endif %}
+    </div>
+  </section>
+
+  <section class="panel">
+    <h3>處理紀錄</h3>
+    {{ timeline(logs) }}
+  </section>
+</div>
+{% endblock %}
