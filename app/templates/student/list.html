@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% from "macros.html" import badge, period %}
+{% set nav = 'list' %}
+{% block main %}
+<div class="head-row">
+  <h2>我的假單</h2>
+  <a class="btn solid" href="/me/leaves/new">＋ 我要請假</a>
+</div>
+
+<div class="stats">
+  <div class="stat"><span>{{ total }}</span>全部假單</div>
+  <div class="stat warn"><span>{{ stats.pending }}</span>待審核</div>
+  <div class="stat ok"><span>{{ used_days }}</span>已核准天數</div>
+  <div class="stat bad"><span>{{ stats.rejected }}</span>被駁回</div>
+</div>
+
+<div class="tabs">
+  <a href="/me/leaves" class="{{ 'on' if show == 'all' }}">全部</a>
+  {% for s in LeaveStatus %}
+  <a href="/me/leaves?show={{ s.value }}" class="{{ 'on' if show == s.value }}">{{ s.label }} {{ stats[s.value] }}</a>
+  {% endfor %}
+</div>
+
+{% if leaves %}
+<div class="cards">
+  {% for x in leaves %}
+  <a class="leave-card {{ x.status.value }}" href="/me/leaves/{{ x.id }}">
+    <div class="row">
+      <span class="type">{{ x.leave_type }}</span>
+      {{ badge(x.status) }}
+    </div>
+    <div class="when">{{ period(x) }}<em>{{ x.days }} 天</em></div>
+    <p class="reason">{{ x.reason }}</p>
+    {% if x.status.value == 'rejected' and x.reply %}
+    <p class="reply">導師：{{ x.reply }}</p>
+    {% endif %}
+  </a>
+  {% endfor %}
+</div>
+{% elif show != 'all' %}
+<p class="nothing">這個分類目前沒有假單。</p>
+{% else %}
+<p class="nothing">還沒有請過假 🎉<br><a href="/me/leaves/new">要請假的話點這裡</a></p>
+{% endif %}
+{% endblock %}
