@@ -1,0 +1,23 @@
+{% macro badge(status) -%}
+<span class="badge {{ status.value }}">{{ status.label }}</span>
+{%- endmacro %}
+
+{% macro period(leave) -%}
+{% if leave.start_date == leave.end_date -%}
+{{ leave.start_date|md }}
+{%- else -%}
+{{ leave.start_date|md }} ～ {{ leave.end_date|md }}
+{%- endif %}
+{%- endmacro %}
+
+{% macro timeline(logs) %}
+<ul class="timeline">
+  {% for log, who in logs %}
+  <li class="act-{{ log.action }}">
+    <time>{{ log.at.strftime('%m/%d %H:%M') }}</time>
+    <div><b>{{ who.display_name }}</b> {{ log.action }}</div>
+    {% if log.note %}<q>{{ log.note }}</q>{% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% endmacro %}
