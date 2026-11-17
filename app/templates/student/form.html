@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+{% set nav = 'new' if leave is none else '' %}
+{% block main %}
+<a class="back" href="{{ '/me/leaves' if leave is none else '/me/leaves/%d' % leave.id }}">‹ 返回</a>
+
+<section class="panel narrow">
+  <h2>{{ '填寫假單' if leave is none else '修改假單' }}</h2>
+  {% if leave and leave.status.value == 'rejected' %}
+  <p class="alert soft">這張假單被駁回：「{{ leave.reply }}」修改後可以重新送出。</p>
+  {% endif %}
+  {% if error %}<p class="alert">{{ error }}</p>{% endif %}
+
+  <form id="leave-form" method="post" class="stack"
+        action="{{ '/me/leaves/new' if leave is none else '/me/leaves/%d/edit' % leave.id }}">
+    <fieldset class="types">
+      <legend>假別</legend>
+      {% for t in LEAVE_TYPES %}
+      <label class="chip"><input type="radio" name="leave_type" value="{{ t }}"
+             {% if t == f.leave_type %}checked{% endif %}> {{ t }}</label>
+      {% endfor %}
+    </fieldset>
+
+    <div class="two">
+      <label>開始日期
+        <input type="date" name="start_date" value="{{ f.start_date }}" required>
+      </label>
+      <label>結束日期
+        <input type="date" name="end_date" value="{{ f.end_date }}" required>
+      </label>
+    </div>
+    <p id="day-count" class="tip" data-max="{{ MAX_DAYS }}"></p>
+
+    <label>請假事由
+      <textarea name="reason" rows="6" maxlength="{{ REASON_LIMIT }}" required
+                placeholder="例如：感冒發燒，需在家休息">{{ f.reason }}</textarea>
+    </label>
+    <p id="reason-count" class="tip right" data-limit="{{ REASON_LIMIT }}"></p>
+
+    <div class="actions">
+      <button class="btn" name="then" value="save">存成草稿</button>
+      <button class="btn solid" name="then" value="send"
+              data-confirm="確定送出給導師審核？送出後要先撤回才能修改。">
+        {{ '重新送出' if leave and leave.status.value == 'rejected' else '送出申請' }}
+      </button>
+    </div>
+  </form>
+</section>
+{% endblock %}
