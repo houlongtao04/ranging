@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% block title %}登入｜線上請假系統{% endblock %}
+{% block body_class %}login-bg{% endblock %}
+{% block main %}
+<section class="login-box">
+  <h1>📝 線上請假系統</h1>
+  <p class="sub">學生線上請假，導師線上審核</p>
+
+  {% if error %}<p class="alert">{{ error }}</p>{% endif %}
+
+  <form method="post" action="/login" class="stack">
+    <label>帳號
+      <input name="account" value="{{ account or '' }}" autocomplete="username" required autofocus>
+    </label>
+    <label>密碼
+      <input id="pw" name="password" type="password" autocomplete="current-password" required>
+    </label>
+    <label class="check"><input type="checkbox" data-show-password="pw"> 顯示密碼</label>
+    <p id="caps-tip" class="caps-tip" hidden>⚠ 大寫鎖定（Caps Lock）已開啟</p>
+    <button class="btn solid wide">登入</button>
+  </form>
+
+  <details class="demo">
+    <summary>測試帳號（密碼 {{ demo_pw }}）</summary>
+    <div class="demo-list">
+      {% for account, name, role, cls in demo %}
+      <button type="button" class="demo-pick" data-account="{{ account }}" data-pw="{{ demo_pw }}">
+        <b>{{ account }}</b> {{ name }}<small>{{ role.label }}</small>
+      </button>
+      {% endfor %}
+    </div>
+  </details>
+</section>
+{% endblock %}
