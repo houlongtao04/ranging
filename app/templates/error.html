@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+{% block title %}出錯了｜線上請假系統{% endblock %}
+{% block main %}
+<section class="panel narrow center">
+  <p class="big-code">{{ err_code }}</p>
+  <p>{{ msg }}</p>
+  <a class="btn" href="/">回首頁</a>
+</section>
+{% endblock %}
